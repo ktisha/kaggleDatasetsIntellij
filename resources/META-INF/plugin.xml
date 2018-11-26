@@ -1,0 +1,13 @@
+<idea-plugin allow-bundled-update="true">
+    <id>com.jetbrains.kaggle</id>
+    <name>Kaggle importer</name>
+    <description>
+        Plugin allows to import datasets from Kaggle platform.
+    </description>
+    <vendor>JetBrains</vendor>
+
+    <actions>
+        <action id="com.jetbrains.kaggle.actions.ImportDataset" class="com.jetbrains.kaggle.actions.ImportDataset"
+                text="Import Kaggle dataset"/>
+    </actions>
+</idea-plugin>

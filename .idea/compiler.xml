@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <wildcardResourcePatterns>
+      <entry name="!?*.java" />
+      <entry name="!?*.form" />
+      <entry name="!?*.class" />
+      <entry name="!?*.groovy" />
+      <entry name="!?*.scala" />
+      <entry name="!?*.flex" />
+      <entry name="!?*.kt" />
+      <entry name="!?*.clj" />
+    </wildcardResourcePatterns>
+    <bytecodeTargetLevel>
+      <module name="kaggleDatasets.kaggleDatasets.main" target="1.8" />
+      <module name="kaggleDatasets.kaggleDatasets.test" target="1.8" />
+      <module name="org.jetbrains.edu.kaggleDatasets.main" target="1.8" />
+      <module name="org.jetbrains.edu.kaggleDatasets.test" target="1.8" />
+      <module name="org.jetbrains.kaggle.kaggleDatasets.main" target="1.8" />
+      <module name="org.jetbrains.kaggle.kaggleDatasets.test" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+</project>
