@@ -6,6 +6,11 @@
     </description>
     <vendor>JetBrains</vendor>
 
+    <extensions defaultExtensionNs="com.intellij">
+        <applicationService serviceInterface="com.jetbrains.kaggle.KaggleDatasetsCache"
+                            serviceImplementation="com.jetbrains.kaggle.KaggleDatasetsCache"/>
+        <postStartupActivity implementation="com.jetbrains.kaggle.KaggleUpdater"/>
+    </extensions>
     <actions>
         <action id="com.jetbrains.kaggle.actions.ImportDataset" class="com.jetbrains.kaggle.actions.ImportDataset"
                 text="Import Kaggle dataset"/>

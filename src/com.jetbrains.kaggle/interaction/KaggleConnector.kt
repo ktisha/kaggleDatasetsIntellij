@@ -55,13 +55,7 @@ object KaggleConnector {
 
   fun datasets(): List<Dataset>? {
     val kaggleService = KaggleConnector.service ?: return null
-    return ProgressManager.getInstance().run(
-      object : Task.WithResult<List<Dataset>?, Exception>(null, "Loading datasets", true) {
-        override fun compute(indicator: ProgressIndicator): List<Dataset>? {
-          return kaggleService.datasets().execute().body()
-        }
-      })
-
+    return kaggleService.datasets().execute().body()
   }
 
   fun downloadDataset(dataset: Dataset, project: Project) {
