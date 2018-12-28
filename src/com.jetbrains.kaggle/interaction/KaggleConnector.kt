@@ -5,6 +5,7 @@ import com.intellij.ide.BrowserUtil
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationListener
 import com.intellij.notification.NotificationType
+import com.intellij.notification.Notifications
 import com.intellij.notification.impl.NotificationFullContent
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
@@ -30,8 +31,8 @@ object KaggleConnector {
       dispatcher.maxRequests = 10
       val credentialsFile = File("$configDir${File.separator}kaggle.json")
       if (!credentialsFile.exists()) {
-        MyNotification("Failed to find credentials. Please, follow the instructions " +
-            "<a href=\"$credentialsLink\">here</a>").notify(null)
+        KaggleNotification("Failed to find credentials. Please, follow the instructions " +
+            "<a href=\"$credentialsLink\">here</a>", NotificationType.WARNING, true).notify(null)
         return null
       }
       val mapper = ObjectMapper()
@@ -66,8 +67,7 @@ object KaggleConnector {
   fun downloadDataset(dataset: Dataset, project: Project) {
     val kaggleService = KaggleConnector.service ?: return
     val responseBody = kaggleService.downloadDataset(dataset.ref).execute().body()
-    val datasetBytes = responseBody?.bytes()
-
+    val datasetBytes = responseBody?.bytes() ?: return
     val filename = if (dataset.ref.startsWith(dataset.ownerRef))
       dataset.ref.substring("${dataset.ownerRef}/".length)
     else
@@ -76,16 +76,23 @@ object KaggleConnector {
     // TODO: use correct path, check if file is unique
     val datasetFile = File(project.basePath +"/datasets/$filename.zip")
     FileUtil.createIfDoesntExist(datasetFile)
-    FileUtil.writeToFile(datasetFile, datasetBytes!!)
+    FileUtil.writeToFile(datasetFile, datasetBytes)
+    Notifications.Bus.notify(KaggleNotification(
+      "Dataset \"${dataset.title}\" saved to the ${datasetFile.path}",
+      NotificationType.INFORMATION,
+      false
+    ))
   }
 }
 
-class MyNotification(content: String) :
+class KaggleNotification(content: String, type: NotificationType, hyperlink: Boolean) :
   Notification("kaggle.downloader",
-    "", content, NotificationType.WARNING,
+    "", content, type,
     object : NotificationListener.Adapter() {
       override fun hyperlinkActivated(notification: Notification, e: HyperlinkEvent) {
-        BrowserUtil.browse(credentialsLink)
+        if (hyperlink) {
+          BrowserUtil.browse(credentialsLink)
+        }
         notification.expire()
       }
     }), NotificationFullContent

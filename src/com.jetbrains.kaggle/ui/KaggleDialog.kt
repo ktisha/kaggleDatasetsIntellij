@@ -1,5 +1,8 @@
 package com.jetbrains.kaggle.ui
 
+import com.intellij.openapi.progress.ProgressIndicator
+import com.intellij.openapi.progress.ProgressManager
+import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.ui.components.JBList
@@ -27,7 +30,10 @@ class KaggleDialog(datasets: List<Dataset>, private val project: Project) : Dial
   override fun doOKAction() {
     super.doOKAction()
     val dataset = jbList.selectedValue
-    KaggleConnector.downloadDataset(dataset, project)
-    // TODO: download in background to the dataset directory and show notification
+    ProgressManager.getInstance().run(object : Task.Modal(project, "Loading Selected Dataset", false) {
+      override fun run(indicator: ProgressIndicator) {
+        KaggleConnector.downloadDataset(dataset, project)
+      }
+    })
   }
 }
