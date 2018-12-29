@@ -19,6 +19,7 @@ class KaggleDialog(datasets: List<Dataset>, private val project: Project) : Dial
 
   init {
     title = "Choose dataset"
+    // TODO: add dataset description
     jbList.installCellRenderer<Dataset> { dataset -> JLabel(dataset.title) }
 
     panel.add(JBScrollPane(jbList))
