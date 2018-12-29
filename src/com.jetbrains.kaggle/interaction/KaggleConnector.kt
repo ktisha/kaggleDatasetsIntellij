@@ -55,7 +55,15 @@ object KaggleConnector {
 
   fun datasets(): List<Dataset>? {
     val kaggleService = KaggleConnector.service ?: return null
-    return kaggleService.datasets().execute().body()
+    val result = mutableListOf<Dataset>()
+    var currentPage = 1
+    while (true) {
+      val datasets = kaggleService.datasets(currentPage).execute().body()
+      if (datasets == null || datasets.isEmpty()) break
+      result.addAll(datasets)
+      currentPage += 1
+    }
+    return result
   }
 
   fun downloadDataset(dataset: Dataset, project: Project) {

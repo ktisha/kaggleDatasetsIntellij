@@ -1,16 +1,19 @@
 package com.jetbrains.kaggle
 
 import com.intellij.openapi.components.*
-import com.intellij.util.containers.ContainerUtil
 import com.intellij.util.xmlb.XmlSerializerUtil
+import com.intellij.util.xmlb.annotations.Transient
 import com.jetbrains.kaggle.interaction.Dataset
 import com.jetbrains.kaggle.interaction.KaggleConnector
 
 @State(name = "KaggleDatasetsCache", storages = [Storage(value = "datasets.xml", roamingType = RoamingType.DISABLED)])
 class KaggleDatasetsCache : PersistentStateComponent<KaggleDatasetsCache> {
-  var datasets: List<Dataset> = ContainerUtil.createConcurrentList()
+  @Volatile var datasets: MutableList<Dataset> = mutableListOf()
+  @Volatile var lastTimeChecked: Long = 0
 
-  var lastTimeChecked: Long = 0
+  @get:Transient
+  @set:Transient
+  @Volatile var updateInProgress: Boolean = false
 
   val datasetsCache: List<Dataset>
     get() {
@@ -21,10 +24,13 @@ class KaggleDatasetsCache : PersistentStateComponent<KaggleDatasetsCache> {
     }
 
   fun updateKaggleCache() {
-    val datasets = KaggleConnector.datasets()
-    if (datasets != null) {
-      KaggleDatasetsCache.instance.datasets = datasets
+    if (updateInProgress) return
+    updateInProgress = true
+    val datasetsFromRemote = KaggleConnector.datasets()
+    if (datasetsFromRemote != null) {
+      datasets.addAll(datasetsFromRemote)
     }
+    updateInProgress = false
   }
 
   override fun getState(): KaggleDatasetsCache? {

@@ -5,13 +5,14 @@ import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Path
+import retrofit2.http.Query
 import retrofit2.http.Streaming
 
 @Suppress("unused")
 interface KaggleService {
 
   @GET("datasets/list")
-  fun datasets(): Call<List<Dataset>>
+  fun datasets(@Query("page") page: Int): Call<List<Dataset>>
 
   @GET("datasets/list/{ref}")
   fun dataset(@Path("ref") ref: String): Call<DatasetFilesContainer>
