@@ -13,6 +13,8 @@
     </extensions>
     <actions>
         <action id="com.jetbrains.kaggle.actions.ImportDataset" class="com.jetbrains.kaggle.actions.ImportDataset"
-                text="Import Kaggle dataset"/>
+                text="Import Kaggle dataset">
+            <add-to-group group-id="ProjectViewPopupMenu"/>
+        </action>
     </actions>
 </idea-plugin>

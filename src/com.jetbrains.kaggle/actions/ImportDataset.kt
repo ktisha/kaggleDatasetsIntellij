@@ -10,7 +10,7 @@ import com.jetbrains.kaggle.KaggleDatasetsCache
 import com.jetbrains.kaggle.KaggleIcons
 import com.jetbrains.kaggle.ui.KaggleDialog
 
-class ImportDataset : DumbAwareAction("&Import Kaggle dataset", "&Import Kaggle dataset", KaggleIcons.KaggleLogo) {
+class ImportDataset : DumbAwareAction("&Import Kaggle Dataset", "&Import Kaggle Dataset", KaggleIcons.KaggleLogo) {
 
   override fun actionPerformed(e: AnActionEvent) {
     val project = e.getData(CommonDataKeys.PROJECT) ?: return
