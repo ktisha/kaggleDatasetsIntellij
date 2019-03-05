@@ -24,13 +24,13 @@ import java.util.concurrent.TimeUnit
 import javax.swing.event.HyperlinkEvent
 
 
-private const val credentialsLink = "https://github.com/Kaggle/kaggle-api#api-credentials"
+const val credentialsLink = "https://github.com/Kaggle/kaggle-api#api-credentials"
 
 object KaggleConnector {
   private val LOG = Logger.getInstance(KaggleConnector::class.java.name)
   val datasetsTopic = Topic.create<DatasetTopic>("Kaggle.datasets", DatasetTopic::class.java)
   private const val PAGES_TO_LOAD = 300
-  private val configDir =
+  val configDir =
     System.getenv("KAGGLE_CONFIG_DIR") ?: "${System.getProperty("user.home")}${File.separator}.kaggle"
 
   private val service: KaggleService?
