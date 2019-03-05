@@ -42,6 +42,9 @@ class KaggleDialog(datasets: List<Dataset>, private val project: Project) : Dial
       descriptionArea.text = jbList.selectedValue.subtitle
     }
     jbList.setEmptyText("No datasets available")
+    if (datasets.isNotEmpty()) {
+      jbList.selectedIndex = 0
+    }
     ListSpeedSearch(jbList) { it.title }
     descriptionArea.lineWrap = true
     descriptionArea.isEditable = false

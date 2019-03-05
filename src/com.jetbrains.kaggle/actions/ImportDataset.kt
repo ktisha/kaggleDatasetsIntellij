@@ -7,9 +7,10 @@ import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.DumbAwareAction
 import com.jetbrains.kaggle.KaggleDatasetsCache
+import com.jetbrains.kaggle.KaggleIcons
 import com.jetbrains.kaggle.ui.KaggleDialog
 
-class ImportDataset : DumbAwareAction("&Import Kaggle dataset") {
+class ImportDataset : DumbAwareAction("&Import Kaggle dataset", "&Import Kaggle dataset", KaggleIcons.KaggleLogo) {
 
   override fun actionPerformed(e: AnActionEvent) {
     val project = e.getData(CommonDataKeys.PROJECT) ?: return
