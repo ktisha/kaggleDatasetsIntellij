@@ -33,7 +33,7 @@ class KaggleDialog(datasets: List<Dataset>, private val project: Project) : Dial
   private val descriptionArea = JTextArea()
 
   init {
-    title = "Choose dataset"
+    title = "Choose Dataset"
     val splitPane = JBSplitter()
 
     jbList.installCellRenderer<Dataset> { dataset -> JLabel(dataset.title) }
