@@ -29,8 +29,6 @@ class ImportDataset : DumbAwareAction("&Import Kaggle dataset") {
       })
     }
     val datasets = KaggleDatasetsCache.INSTANCE.datasetsCache
-    if (datasets.isEmpty()) return
-
     val kaggleDialog = KaggleDialog(datasets, project)
     kaggleDialog.show()
   }
