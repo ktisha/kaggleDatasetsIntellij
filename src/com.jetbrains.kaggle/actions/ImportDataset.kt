@@ -14,21 +14,21 @@ class ImportDataset : DumbAwareAction("&Import Kaggle dataset") {
   override fun actionPerformed(e: AnActionEvent) {
     val project = e.getData(CommonDataKeys.PROJECT) ?: return
 
-    if (KaggleDatasetsCache.instance.updateInProgress) {
+    if (KaggleDatasetsCache.INSTANCE.updateInProgress) {
       ProgressManager.getInstance().run(object : Task.Modal(null, "Loading datasets", true) {
         override fun run(indicator: ProgressIndicator) {
           indicator.isIndeterminate = true
           while (true) {
             indicator.checkCanceled()
             Thread.sleep(500)
-            if (!KaggleDatasetsCache.instance.updateInProgress) {
+            if (!KaggleDatasetsCache.INSTANCE.updateInProgress) {
               break
             }
           }
         }
       })
     }
-    val datasets = KaggleDatasetsCache.instance.datasetsCache
+    val datasets = KaggleDatasetsCache.INSTANCE.datasetsCache
     if (datasets.isEmpty()) return
 
     val kaggleDialog = KaggleDialog(datasets, project)

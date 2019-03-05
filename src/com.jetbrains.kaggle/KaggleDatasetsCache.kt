@@ -1,9 +1,11 @@
 package com.jetbrains.kaggle
 
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.*
 import com.intellij.util.xmlb.XmlSerializerUtil
 import com.intellij.util.xmlb.annotations.Transient
 import com.jetbrains.kaggle.interaction.Dataset
+import com.jetbrains.kaggle.interaction.DatasetTopic
 import com.jetbrains.kaggle.interaction.KaggleConnector
 
 @State(name = "KaggleDatasetsCache", storages = [Storage(value = "datasets.xml", roamingType = RoamingType.DISABLED)])
@@ -24,13 +26,10 @@ class KaggleDatasetsCache : PersistentStateComponent<KaggleDatasetsCache> {
     }
 
   fun updateKaggleCache() {
+    ApplicationManager.getApplication().messageBus.syncPublisher<DatasetTopic>(KaggleConnector.datasetsTopic).datasetCacheUpdateStarted()
     if (updateInProgress) return
     updateInProgress = true
-    val datasetsFromRemote = KaggleConnector.datasets()
-    if (datasetsFromRemote != null) {
-      datasets.addAll(datasetsFromRemote)
-    }
-    updateInProgress = false
+    KaggleConnector.fillDatasets()
   }
 
   override fun getState(): KaggleDatasetsCache? {
@@ -42,7 +41,7 @@ class KaggleDatasetsCache : PersistentStateComponent<KaggleDatasetsCache> {
   }
 
   companion object {
-    val instance: KaggleDatasetsCache
+    val INSTANCE: KaggleDatasetsCache
       get() = ServiceManager.getService(KaggleDatasetsCache::class.java)
   }
 }

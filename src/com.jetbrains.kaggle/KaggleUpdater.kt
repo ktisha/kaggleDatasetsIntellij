@@ -12,14 +12,15 @@ class KaggleUpdater : StartupActivity {
       return
     }
     if (checkNeeded()) {
-      application.executeOnPooledThread{
-        KaggleDatasetsCache.instance.updateKaggleCache()
+      KaggleDatasetsCache.INSTANCE.lastTimeChecked = System.currentTimeMillis()
+      application.executeOnPooledThread {
+        KaggleDatasetsCache.INSTANCE.updateKaggleCache()
       }
     }
   }
 
   private fun checkNeeded(): Boolean {
-    val datasetsCache = KaggleDatasetsCache.instance
+    val datasetsCache = KaggleDatasetsCache.INSTANCE
     val timeDelta = System.currentTimeMillis() - datasetsCache.lastTimeChecked
     return Math.abs(timeDelta) >= EXPIRATION_TIMEOUT
   }
