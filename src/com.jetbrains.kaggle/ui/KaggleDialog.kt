@@ -63,13 +63,13 @@ class KaggleDialog(datasets: List<Dataset>, private val project: Project) : Dial
 
     ApplicationManager.getApplication().messageBus.connect().subscribe(KaggleConnector.datasetsTopic,
       object : DatasetTopic {
-        override fun datasetCacheUpdateStarted() {
+        override fun cacheUpdateStarted() {
           jbList.setPaintBusy(true)
         }
 
-        override fun datasetCacheUpdated() {
+        override fun cacheUpdated() {
           jbList.setPaintBusy(false)
-          jbList.model = createDefaultListModel(KaggleDatasetsCache.INSTANCE.datasetsCache)
+          jbList.model = createDefaultListModel(KaggleDatasetsCache.INSTANCE.datasets)
         }
       })
   }

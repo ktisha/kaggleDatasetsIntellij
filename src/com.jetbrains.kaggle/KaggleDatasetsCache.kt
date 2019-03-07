@@ -25,10 +25,23 @@ class KaggleDatasetsCache : PersistentStateComponent<KaggleDatasetsCache> {
       return datasets
     }
 
+  init {
+    ApplicationManager.getApplication().messageBus.connect().subscribe<DatasetTopic>(KaggleConnector.datasetsTopic,
+      object : DatasetTopic {
+        override fun cacheUpdateStarted() {
+          updateInProgress = true
+        }
+
+        override fun cacheUpdated() {
+          updateInProgress = false
+        }
+      })
+  }
+
   fun updateKaggleCache() {
-    ApplicationManager.getApplication().messageBus.syncPublisher<DatasetTopic>(KaggleConnector.datasetsTopic).datasetCacheUpdateStarted()
+    ApplicationManager.getApplication().messageBus.syncPublisher<DatasetTopic>(KaggleConnector.datasetsTopic)
+      .cacheUpdateStarted()
     if (updateInProgress) return
-    updateInProgress = true
     KaggleConnector.fillDatasets()
   }
 

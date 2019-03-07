@@ -39,18 +39,14 @@ object KaggleConnector {
       dispatcher.maxRequests = 10
       val credentialsFile = File("$configDir${File.separator}kaggle.json")
       if (!credentialsFile.exists()) {
-        KaggleNotification(
-          "Failed to find credentials. Please, follow the instructions " +
-              "<a href=\"$credentialsLink\">here</a>", NotificationType.WARNING, true
-        ).notify(null)
         return null
       }
       val mapper = ObjectMapper()
       val kaggleCredentials = mapper.readValue(credentialsFile, KaggleCredentials::class.java)
 
       val logger = HttpLoggingInterceptor { LOG.info(it) }
-      logger.level =
-        if (ApplicationManager.getApplication().isInternal) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.BASIC
+      logger.level = if (ApplicationManager.getApplication().isInternal) HttpLoggingInterceptor.Level.BODY
+                     else HttpLoggingInterceptor.Level.BASIC
 
       val okHttpClient = OkHttpClient.Builder()
         .readTimeout(60, TimeUnit.SECONDS)
@@ -88,9 +84,7 @@ object KaggleConnector {
         private fun pageLoaded() {
           pagesLoaded += 1
           if (pagesLoaded == PAGES_TO_LOAD - 1) {
-            KaggleDatasetsCache.INSTANCE.updateInProgress = false
-            ApplicationManager.getApplication().messageBus.syncPublisher<DatasetTopic>(datasetsTopic)
-              .datasetCacheUpdated()
+            ApplicationManager.getApplication().messageBus.syncPublisher<DatasetTopic>(datasetsTopic).cacheUpdated()
           }
         }
       })
@@ -145,6 +139,6 @@ class BasicAuthInterceptor(user: String, token: String) : Interceptor {
 }
 
 interface DatasetTopic {
-  fun datasetCacheUpdateStarted()
-  fun datasetCacheUpdated()
+  fun cacheUpdateStarted()
+  fun cacheUpdated()
 }
