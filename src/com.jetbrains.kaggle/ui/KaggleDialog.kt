@@ -23,14 +23,15 @@ import com.jetbrains.kaggle.interaction.KaggleConnector
 import java.awt.Dimension
 import javax.swing.JComponent
 import javax.swing.JLabel
-import javax.swing.JTextArea
+import javax.swing.JTextPane
 import javax.swing.ListSelectionModel
+import javax.swing.text.html.HTMLEditorKit
 
 class KaggleDialog(datasets: List<Dataset>, private val project: Project) : DialogWrapper(false) {
   private val panel: BorderLayoutPanel = BorderLayoutPanel()
   private val jbList = JBList(datasets)
 
-  private val descriptionArea = JTextArea()
+  private val descriptionArea = JTextPane()
 
   init {
     title = "Choose Dataset"
@@ -39,16 +40,19 @@ class KaggleDialog(datasets: List<Dataset>, private val project: Project) : Dial
     jbList.installCellRenderer<Dataset> { dataset -> JLabel(dataset.title) }
     jbList.selectionMode = ListSelectionModel.SINGLE_SELECTION
     jbList.addListSelectionListener {
-      descriptionArea.text = jbList.selectedValue.subtitle
+      descriptionArea.text = "<html>${jbList.selectedValue.subtitle}" +
+          "<br/><br/>" +
+          "<a href=\"${jbList.selectedValue.url}\">${jbList.selectedValue.title}</a></html>"
     }
     jbList.setEmptyText("No datasets available")
     if (datasets.isNotEmpty()) {
       jbList.selectedIndex = 0
     }
     ListSpeedSearch(jbList) { it.title }
-    descriptionArea.lineWrap = true
     descriptionArea.isEditable = false
     descriptionArea.background = UIUtil.getPanelBackground()
+    descriptionArea.contentType = HTMLEditorKit().contentType
+    descriptionArea.editorKit = UIUtil.JBWordWrapHtmlEditorKit()
     splitPane.firstComponent =
       ToolbarDecorator.createDecorator(jbList).disableAddAction().disableRemoveAction().disableUpDownActions()
         .addExtraAction(object : AnActionButton("Refresh datasets list", AllIcons.Actions.Refresh) {
