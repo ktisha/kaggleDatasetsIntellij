@@ -70,6 +70,7 @@ object KaggleConnector {
   fun fillDatasets() {
     val kaggleService = KaggleConnector.service ?: return
     var pagesLoaded = 0
+    val progressIndicator = ProgressManager.getInstance().progressIndicator
     for (currentPage in 1..PAGES_TO_LOAD) {
       kaggleService.datasets(currentPage).enqueue(object : Callback<List<Dataset>> {
         override fun onFailure(call: Call<List<Dataset>>, t: Throwable) {
@@ -86,8 +87,7 @@ object KaggleConnector {
 
         private fun pageLoaded() {
           pagesLoaded += 1
-          val progressIndicator = ProgressManager.getInstance().progressIndicator
-          if (progressIndicator != null) {
+          if (progressIndicator != null && !progressIndicator.isCanceled && !progressIndicator.isRunning) {
             progressIndicator.fraction = pagesLoaded.toDouble() / PAGES_TO_LOAD
           }
 

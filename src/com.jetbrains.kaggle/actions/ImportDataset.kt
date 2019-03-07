@@ -3,6 +3,7 @@ package com.jetbrains.kaggle.actions
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
+import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task
@@ -27,11 +28,9 @@ class ImportDataset : DumbAwareAction("&Import Kaggle Dataset", "&Import Kaggle 
       return
     }
 
-    val datasets = KaggleDatasetsCache.INSTANCE.datasetsCache
-
-    if (KaggleDatasetsCache.INSTANCE.updateInProgress) {
       ProgressManager.getInstance().run(object : Task.Modal(null, "Import Dataset", true) {
         override fun run(indicator: ProgressIndicator) {
+          val datasets = KaggleDatasetsCache.INSTANCE.datasetsCache
           indicator.isIndeterminate = false
           indicator.text = "Loading datasets"
           indicator.text2 = "It may take some time to load datasets for the first time"
@@ -42,11 +41,12 @@ class ImportDataset : DumbAwareAction("&Import Kaggle Dataset", "&Import Kaggle 
               break
             }
           }
+          runInEdt {
+            val kaggleDialog = KaggleDialog(datasets, project)
+            kaggleDialog.show()
+          }
         }
       })
-    }
-    val kaggleDialog = KaggleDialog(datasets, project)
-    kaggleDialog.show()
   }
 
   override fun update(e: AnActionEvent) {
