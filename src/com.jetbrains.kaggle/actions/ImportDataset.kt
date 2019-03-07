@@ -9,9 +9,9 @@ import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.DumbAwareAction
 import com.jetbrains.kaggle.KaggleDatasetsCache
 import com.jetbrains.kaggle.KaggleIcons
+import com.jetbrains.kaggle.interaction.CREDENTIALS_MESSAGE
 import com.jetbrains.kaggle.interaction.KaggleConnector
 import com.jetbrains.kaggle.interaction.KaggleNotification
-import com.jetbrains.kaggle.interaction.CREDENTIALS_MESSAGE
 import com.jetbrains.kaggle.ui.KaggleDialog
 import java.io.File
 
@@ -27,11 +27,14 @@ class ImportDataset : DumbAwareAction("&Import Kaggle Dataset", "&Import Kaggle 
       return
     }
 
+    val datasets = KaggleDatasetsCache.INSTANCE.datasetsCache
+
     if (KaggleDatasetsCache.INSTANCE.updateInProgress) {
-      ProgressManager.getInstance().run(object : Task.Modal(null, "Loading datasets", true) {
+      ProgressManager.getInstance().run(object : Task.Modal(null, "Import Dataset", true) {
         override fun run(indicator: ProgressIndicator) {
-          indicator.isIndeterminate = true
-          indicator.text = "It may take some time to load datasets for the first time."
+          indicator.isIndeterminate = false
+          indicator.text = "Loading datasets"
+          indicator.text2 = "It may take some time to load datasets for the first time"
           while (true) {
             indicator.checkCanceled()
             Thread.sleep(500)
@@ -42,7 +45,6 @@ class ImportDataset : DumbAwareAction("&Import Kaggle Dataset", "&Import Kaggle 
         }
       })
     }
-    val datasets = KaggleDatasetsCache.INSTANCE.datasetsCache
     val kaggleDialog = KaggleDialog(datasets, project)
     kaggleDialog.show()
   }

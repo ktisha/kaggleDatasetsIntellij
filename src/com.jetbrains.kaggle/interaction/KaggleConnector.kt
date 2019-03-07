@@ -9,6 +9,7 @@ import com.intellij.notification.Notifications
 import com.intellij.notification.impl.NotificationFullContent
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.util.messages.Topic
@@ -85,6 +86,11 @@ object KaggleConnector {
 
         private fun pageLoaded() {
           pagesLoaded += 1
+          val progressIndicator = ProgressManager.getInstance().progressIndicator
+          if (progressIndicator != null) {
+            progressIndicator.fraction = pagesLoaded.toDouble() / PAGES_TO_LOAD
+          }
+
           if (pagesLoaded == PAGES_TO_LOAD - 1) {
             ApplicationManager.getApplication().messageBus.syncPublisher<DatasetTopic>(datasetsTopic).cacheUpdated()
           }

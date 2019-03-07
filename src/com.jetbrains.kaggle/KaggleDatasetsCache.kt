@@ -39,9 +39,9 @@ class KaggleDatasetsCache : PersistentStateComponent<KaggleDatasetsCache> {
   }
 
   fun updateKaggleCache() {
+    if (updateInProgress) return
     ApplicationManager.getApplication().messageBus.syncPublisher<DatasetTopic>(KaggleConnector.datasetsTopic)
       .cacheUpdateStarted()
-    if (updateInProgress) return
     KaggleConnector.fillDatasets()
   }
 
