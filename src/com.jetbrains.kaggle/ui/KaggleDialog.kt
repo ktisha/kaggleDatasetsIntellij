@@ -8,10 +8,7 @@ import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
-import com.intellij.ui.AnActionButton
-import com.intellij.ui.JBSplitter
-import com.intellij.ui.ListSpeedSearch
-import com.intellij.ui.ToolbarDecorator
+import com.intellij.ui.*
 import com.intellij.ui.components.JBList
 import com.intellij.ui.components.JBList.createDefaultListModel
 import com.intellij.util.ui.UIUtil
@@ -53,6 +50,7 @@ class KaggleDialog(datasets: List<Dataset>, private val project: Project) : Dial
     descriptionArea.background = UIUtil.getPanelBackground()
     descriptionArea.contentType = HTMLEditorKit().contentType
     descriptionArea.editorKit = UIUtil.JBWordWrapHtmlEditorKit()
+    descriptionArea.addHyperlinkListener(BrowserHyperlinkListener.INSTANCE)
     splitPane.firstComponent =
       ToolbarDecorator.createDecorator(jbList).disableAddAction().disableRemoveAction().disableUpDownActions()
         .addExtraAction(object : AnActionButton("Refresh datasets list", AllIcons.Actions.Refresh) {
