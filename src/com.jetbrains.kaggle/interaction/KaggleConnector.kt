@@ -24,7 +24,9 @@ import java.util.concurrent.TimeUnit
 import javax.swing.event.HyperlinkEvent
 
 
-const val credentialsLink = "https://github.com/Kaggle/kaggle-api#api-credentials"
+const val CREDENTIALS_LINK = "https://github.com/Kaggle/kaggle-api#api-credentials"
+const val CREDENTIALS_MESSAGE = "Failed to find credentials. Please, follow the instructions " +
+    "<a href=\"$CREDENTIALS_LINK\">here</a>"
 
 object KaggleConnector {
   private val LOG = Logger.getInstance(KaggleConnector::class.java.name)
@@ -120,7 +122,7 @@ class KaggleNotification(content: String, type: NotificationType, hyperlink: Boo
     object : NotificationListener.Adapter() {
       override fun hyperlinkActivated(notification: Notification, e: HyperlinkEvent) {
         if (hyperlink) {
-          BrowserUtil.browse(credentialsLink)
+          BrowserUtil.browse(CREDENTIALS_LINK)
         }
         notification.expire()
       }

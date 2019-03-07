@@ -11,7 +11,7 @@ import com.jetbrains.kaggle.KaggleDatasetsCache
 import com.jetbrains.kaggle.KaggleIcons
 import com.jetbrains.kaggle.interaction.KaggleConnector
 import com.jetbrains.kaggle.interaction.KaggleNotification
-import com.jetbrains.kaggle.interaction.credentialsLink
+import com.jetbrains.kaggle.interaction.CREDENTIALS_MESSAGE
 import com.jetbrains.kaggle.ui.KaggleDialog
 import java.io.File
 
@@ -22,9 +22,7 @@ class ImportDataset : DumbAwareAction("&Import Kaggle Dataset", "&Import Kaggle 
 
     val credentialsFile = File("${KaggleConnector.configDir}${File.separator}kaggle.json")
     if (!credentialsFile.exists()) {
-      KaggleNotification(
-        "Failed to find credentials. Please, follow the instructions " +
-            "<a href=\"$credentialsLink\">here</a>", NotificationType.WARNING, true
+      KaggleNotification(CREDENTIALS_MESSAGE, NotificationType.WARNING, true
       ).notify(null)
       return
     }
