@@ -31,6 +31,7 @@ class ImportDataset : DumbAwareAction("&Import Kaggle Dataset", "&Import Kaggle 
       ProgressManager.getInstance().run(object : Task.Modal(null, "Loading datasets", true) {
         override fun run(indicator: ProgressIndicator) {
           indicator.isIndeterminate = true
+          indicator.text = "It may take some time to load datasets for the first time."
           while (true) {
             indicator.checkCanceled()
             Thread.sleep(500)
