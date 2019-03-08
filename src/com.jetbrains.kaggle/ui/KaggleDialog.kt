@@ -85,8 +85,10 @@ class KaggleDialog(datasets: List<Dataset>, private val project: Project) : Dial
   override fun doOKAction() {
     super.doOKAction()
     val dataset = jbList.selectedValue ?: return
-    ProgressManager.getInstance().run(object : Task.Modal(project, "Loading Selected Dataset", false) {
+    ProgressManager.getInstance().run(object : Task.Backgroundable(project, "Loading Selected Dataset",
+      false) {
       override fun run(indicator: ProgressIndicator) {
+        indicator.isIndeterminate = true
         KaggleConnector.downloadDataset(dataset, project)
       }
     })
