@@ -15,12 +15,13 @@ import com.intellij.openapi.util.io.FileUtil
 import com.intellij.util.messages.Topic
 import com.jetbrains.kaggle.KaggleDatasetsCache
 import okhttp3.*
-import okhttp3.logging.HttpLoggingInterceptor
+import org.apache.xmlbeans.impl.common.IOUtil
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Retrofit
 import retrofit2.converter.jackson.JacksonConverterFactory
 import java.io.File
+import java.io.FileOutputStream
 import java.util.concurrent.TimeUnit
 import javax.swing.event.HyperlinkEvent
 
@@ -47,15 +48,10 @@ object KaggleConnector {
       val mapper = ObjectMapper()
       val kaggleCredentials = mapper.readValue(credentialsFile, KaggleCredentials::class.java)
 
-      val logger = HttpLoggingInterceptor { LOG.info(it) }
-      logger.level = if (ApplicationManager.getApplication().isInternal) HttpLoggingInterceptor.Level.BODY
-                     else HttpLoggingInterceptor.Level.BASIC
-
       val okHttpClient = OkHttpClient.Builder()
         .readTimeout(60, TimeUnit.SECONDS)
         .connectTimeout(60, TimeUnit.SECONDS)
         .addInterceptor(BasicAuthInterceptor(kaggleCredentials.username, kaggleCredentials.key))
-        .addInterceptor(logger)
         .dispatcher(dispatcher)
         .build()
       val retrofit = Retrofit.Builder()
@@ -101,17 +97,20 @@ object KaggleConnector {
 
   fun downloadDataset(dataset: Dataset, project: Project) {
     val kaggleService = KaggleConnector.service ?: return
-    val responseBody = kaggleService.downloadDataset(dataset.ref).execute().body()
-    val datasetBytes = responseBody?.bytes() ?: return
-    val filename = if (dataset.ref.startsWith(dataset.ownerRef))
-      dataset.ref.substring("${dataset.ownerRef}/".length)
-    else
-      dataset.ref
+    val ref = dataset.ref
+
+    val responseBody = kaggleService.downloadDataset(
+      ref.substringBefore("/"),
+      ref.substringAfter("/")
+    ).execute().body() ?: return
+
+    val filename = if (ref.startsWith(dataset.ownerRef)) ref.substring("${dataset.ownerRef}/".length) else ref
 
     // TODO: use correct path, check if file is unique
     val datasetFile = File(project.basePath + "/datasets/$filename.zip")
     FileUtil.createIfDoesntExist(datasetFile)
-    FileUtil.writeToFile(datasetFile, datasetBytes)
+    val output = FileOutputStream(datasetFile)
+    IOUtil.copyCompletely(responseBody.byteStream(), output)
     Notifications.Bus.notify(
       KaggleNotification(
         "Dataset \"${dataset.title}\" saved to the ${datasetFile.path}",

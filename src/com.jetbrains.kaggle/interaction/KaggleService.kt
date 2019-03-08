@@ -18,8 +18,8 @@ interface KaggleService {
   fun dataset(@Path("ref") ref: String): Call<DatasetFilesContainer>
 
   @Streaming
-  @GET("datasets/download/{ref}")
-  fun downloadDataset(@Path("ref") ref: String): Call<ResponseBody>
+  @GET("datasets/download/{ownerRef}/{ref}/")
+  fun downloadDataset(@Path("ownerRef") ownerRef: String, @Path("ref") ref: String): Call<ResponseBody>
 }
 
 @Suppress("unused")

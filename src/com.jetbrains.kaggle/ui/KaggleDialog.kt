@@ -3,6 +3,7 @@ package com.jetbrains.kaggle.ui
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.progress.PerformInBackgroundOption
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task
@@ -86,7 +87,7 @@ class KaggleDialog(datasets: List<Dataset>, private val project: Project) : Dial
     super.doOKAction()
     val dataset = jbList.selectedValue ?: return
     ProgressManager.getInstance().run(object : Task.Backgroundable(project, "Loading Selected Dataset",
-      false) {
+      false, PerformInBackgroundOption.DEAF) {
       override fun run(indicator: ProgressIndicator) {
         indicator.isIndeterminate = true
         KaggleConnector.downloadDataset(dataset, project)
