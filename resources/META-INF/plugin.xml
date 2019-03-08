@@ -6,6 +6,8 @@
     </description>
     <vendor>JetBrains</vendor>
 
+    <depends>com.intellij.modules.platform</depends>
+
     <extensions defaultExtensionNs="com.intellij">
         <applicationService serviceInterface="com.jetbrains.kaggle.KaggleDatasetsCache"
                             serviceImplementation="com.jetbrains.kaggle.KaggleDatasetsCache"/>
