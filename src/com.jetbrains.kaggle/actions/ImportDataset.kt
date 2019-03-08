@@ -4,6 +4,7 @@ import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.application.runInEdt
+import com.intellij.openapi.progress.PerformInBackgroundOption
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task
@@ -28,7 +29,8 @@ class ImportDataset : DumbAwareAction("&Import Kaggle Dataset", "&Import Kaggle 
       return
     }
 
-      ProgressManager.getInstance().run(object : Task.Modal(null, "Import Dataset", true) {
+      ProgressManager.getInstance().run(object : Task.Backgroundable(null, "Import Dataset",
+        true, PerformInBackgroundOption.DEAF) {
         override fun run(indicator: ProgressIndicator) {
           val datasets = KaggleDatasetsCache.INSTANCE.datasetsCache
           indicator.isIndeterminate = false
