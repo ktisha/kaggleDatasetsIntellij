@@ -3,5 +3,5 @@ Kaggle is an online community of data scientists and machine learners, owned by 
 explore and build models in a web-based data-science environment, work with other data scientists and machine learning engineers,
 and enter competitions to solve data science challenges.
 
-This plugin adds action to the IDE to download Kaggle datasets from the IDE.
+This plugin adds action to download Kaggle datasets from the IDE.
 ![](images/action.png)
