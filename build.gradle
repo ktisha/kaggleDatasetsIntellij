@@ -38,3 +38,8 @@ compileKotlin {
 compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
 }
+
+version = "1.0"
+intellij {
+    patchPluginXml.sinceBuild = "173.*"
+}
