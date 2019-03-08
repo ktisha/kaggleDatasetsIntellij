@@ -42,9 +42,6 @@ class KaggleDialog(datasets: List<Dataset>, private val project: Project) : Dial
           "<a href=\"${jbList.selectedValue.url}\">${jbList.selectedValue.title}</a></html>"
     }
     jbList.setEmptyText("No datasets available")
-    if (datasets.isNotEmpty()) {
-      jbList.selectedIndex = 0
-    }
     ListSpeedSearch(jbList) { it.title }
     descriptionArea.isEditable = false
     descriptionArea.background = UIUtil.getPanelBackground()
@@ -62,6 +59,9 @@ class KaggleDialog(datasets: List<Dataset>, private val project: Project) : Dial
     panel.add(splitPane)
     panel.preferredSize = Dimension(800, 600)
     init()
+    if (datasets.isNotEmpty()) {
+      jbList.selectedIndex = 0
+    }
 
     ApplicationManager.getApplication().messageBus.connect().subscribe(KaggleConnector.datasetsTopic,
       object : DatasetTopic {
