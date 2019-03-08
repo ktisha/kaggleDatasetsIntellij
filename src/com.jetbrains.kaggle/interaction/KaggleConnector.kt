@@ -95,7 +95,7 @@ object KaggleConnector {
   }
 
   fun downloadDataset(filePath: String, dataset: Dataset) {
-    val kaggleService = KaggleConnector.service ?: return
+    val kaggleService = KaggleConnector.service ?: return // TODO: Failure notifications
 
     val responseBody = kaggleService.downloadDataset(
       dataset.ref.substringBefore("/"),
