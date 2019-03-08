@@ -10,7 +10,6 @@ import com.intellij.notification.impl.NotificationFullContent
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.ProgressManager
-import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.util.messages.Topic
 import com.jetbrains.kaggle.KaggleDatasetsCache
@@ -95,19 +94,15 @@ object KaggleConnector {
     }
   }
 
-  fun downloadDataset(dataset: Dataset, project: Project) {
+  fun downloadDataset(filePath: String, dataset: Dataset) {
     val kaggleService = KaggleConnector.service ?: return
-    val ref = dataset.ref
 
     val responseBody = kaggleService.downloadDataset(
-      ref.substringBefore("/"),
-      ref.substringAfter("/")
+      dataset.ref.substringBefore("/"),
+      dataset.ref.substringAfter("/")
     ).execute().body() ?: return
 
-    val filename = if (ref.startsWith(dataset.ownerRef)) ref.substring("${dataset.ownerRef}/".length) else ref
-
-    // TODO: use correct path, check if file is unique
-    val datasetFile = File(project.basePath + "/datasets/$filename.zip")
+    val datasetFile = File(filePath)
     FileUtil.createIfDoesntExist(datasetFile)
     val output = FileOutputStream(datasetFile)
     IOUtil.copyCompletely(responseBody.byteStream(), output)

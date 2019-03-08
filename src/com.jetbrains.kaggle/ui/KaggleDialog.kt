@@ -9,9 +9,14 @@ import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
+import com.intellij.openapi.ui.InputValidator
+import com.intellij.openapi.ui.Messages
+import com.intellij.openapi.util.io.FileUtil
+import com.intellij.openapi.util.text.StringUtil
 import com.intellij.ui.*
 import com.intellij.ui.components.JBList
 import com.intellij.ui.components.JBList.createDefaultListModel
+import com.intellij.util.PathUtil
 import com.intellij.util.ui.UIUtil
 import com.intellij.util.ui.components.BorderLayoutPanel
 import com.jetbrains.kaggle.KaggleDatasetsCache
@@ -86,12 +91,42 @@ class KaggleDialog(datasets: List<Dataset>, private val project: Project) : Dial
   override fun doOKAction() {
     super.doOKAction()
     val dataset = jbList.selectedValue ?: return
-    ProgressManager.getInstance().run(object : Task.Backgroundable(project, "Loading Selected Dataset",
-      false, PerformInBackgroundOption.DEAF) {
+
+    val ref = dataset.ref
+    val initialFileName = if (ref.startsWith(dataset.ownerRef)) ref.substring("${dataset.ownerRef}/".length) else ref
+
+    val filePath = Messages.showInputDialog(
+      "Enter path:", "Download Dataset", null,
+      project.basePath + "/datasets/$initialFileName.zip", FilePathValidator
+    ) ?: return
+
+    ProgressManager.getInstance().run(object : Task.Backgroundable(
+      project, "Loading Selected Dataset",
+      false, PerformInBackgroundOption.DEAF
+    ) {
       override fun run(indicator: ProgressIndicator) {
         indicator.isIndeterminate = true
-        KaggleConnector.downloadDataset(dataset, project)
+        KaggleConnector.downloadDataset(filePath, dataset)
       }
     })
+  }
+}
+
+object FilePathValidator : InputValidator {
+  override fun checkInput(inputString: String): Boolean {
+    val fileNames = StringUtil.split(FileUtil.toSystemIndependentName(inputString), "/")
+    if (fileNames.isEmpty()) {
+      return false
+    }
+    for (fileName in fileNames) {
+      if (!PathUtil.isValidFileName(fileName)) {
+        return false
+      }
+    }
+    return true
+  }
+
+  override fun canClose(inputString: String): Boolean {
+    return checkInput(inputString)
   }
 }
