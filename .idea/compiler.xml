@@ -14,6 +14,8 @@
     <bytecodeTargetLevel>
       <module name="kaggleDatasets.kaggleDatasets.main" target="1.8" />
       <module name="kaggleDatasets.kaggleDatasets.test" target="1.8" />
+      <module name="kaggleDatasetsIntellij_main" target="11" />
+      <module name="kaggleDatasetsIntellij_test" target="11" />
       <module name="org.jetbrains.edu.kaggleDatasets.main" target="1.8" />
       <module name="org.jetbrains.edu.kaggleDatasets.test" target="1.8" />
       <module name="org.jetbrains.kaggle.kaggleDatasets.main" target="1.8" />
