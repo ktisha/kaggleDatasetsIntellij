@@ -9,13 +9,12 @@
     <depends>com.intellij.modules.platform</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <applicationService serviceInterface="com.jetbrains.kaggle.KaggleDatasetsCache"
-                            serviceImplementation="com.jetbrains.kaggle.KaggleDatasetsCache"/>
+        <applicationService serviceImplementation="com.jetbrains.kaggle.KaggleDatasetsCache"/>
         <postStartupActivity implementation="com.jetbrains.kaggle.KaggleUpdater"/>
     </extensions>
     <actions>
         <action id="com.jetbrains.kaggle.actions.ImportDataset" class="com.jetbrains.kaggle.actions.ImportDataset"
-                text="Import Kaggle dataset">
+                text="Import Kaggle Dataset">
             <add-to-group group-id="ProjectViewPopupMenu"/>
         </action>
     </actions>

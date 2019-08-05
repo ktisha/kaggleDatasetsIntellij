@@ -39,7 +39,9 @@ compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
 }
 
-version = "1.0"
+version = "1.1"
 intellij {
     patchPluginXml.sinceBuild = "173.*"
+    patchPluginXml.untilBuild = "193.*"
+    buildSearchableOptions.enabled = false
 }
