@@ -43,7 +43,7 @@ version = "1.2"
 intellij {
     version = "IC-2022.1.1"
     type = "IC"
-    patchPluginXml.sinceBuild = "173.*"
+    patchPluginXml.sinceBuild = "193.*"
     patchPluginXml.untilBuild = "231.*"
     buildSearchableOptions.enabled = false
     instrumentCode = false
