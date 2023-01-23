@@ -1,6 +1,6 @@
 <idea-plugin allow-bundled-update="true">
     <id>com.jetbrains.kaggle</id>
-    <name>Kaggle Importer</name>
+    <name>Kaggle Datasets</name>
     <description>
         Plugin allows to import datasets from Kaggle platform.
     </description>
@@ -11,6 +11,7 @@
     <extensions defaultExtensionNs="com.intellij">
         <applicationService serviceImplementation="com.jetbrains.kaggle.KaggleDatasetsCache"/>
         <postStartupActivity implementation="com.jetbrains.kaggle.KaggleUpdater"/>
+        <notificationGroup id="kaggle.downloader" displayType="BALLOON"/>
     </extensions>
     <actions>
         <action id="com.jetbrains.kaggle.actions.ImportDataset" class="com.jetbrains.kaggle.actions.ImportDataset"

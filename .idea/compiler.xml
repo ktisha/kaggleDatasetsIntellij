@@ -11,7 +11,7 @@
       <entry name="!?*.kt" />
       <entry name="!?*.clj" />
     </wildcardResourcePatterns>
-    <bytecodeTargetLevel>
+    <bytecodeTargetLevel target="11">
       <module name="kaggleDatasets.kaggleDatasets.main" target="1.8" />
       <module name="kaggleDatasets.kaggleDatasets.test" target="1.8" />
       <module name="kaggleDatasetsIntellij_main" target="11" />

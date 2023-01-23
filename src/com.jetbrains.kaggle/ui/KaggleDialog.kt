@@ -17,6 +17,7 @@ import com.intellij.ui.*
 import com.intellij.ui.components.JBList
 import com.intellij.ui.components.JBList.createDefaultListModel
 import com.intellij.util.PathUtil
+import com.intellij.util.ui.HTMLEditorKitBuilder
 import com.intellij.util.ui.UIUtil
 import com.intellij.util.ui.components.BorderLayoutPanel
 import com.jetbrains.kaggle.KaggleDatasetsCache
@@ -40,7 +41,7 @@ class KaggleDialog(datasets: List<Dataset>, private val project: Project) : Dial
     title = "Choose Dataset"
     val splitPane = JBSplitter()
 
-    jbList.installCellRenderer<Dataset> { dataset -> JLabel(dataset.title) }
+    jbList.installCellRenderer { dataset -> JLabel(dataset.title) }
     jbList.selectionMode = ListSelectionModel.SINGLE_SELECTION
     jbList.addListSelectionListener {
       descriptionArea.text = "<html>${jbList.selectedValue.subtitle}" +
@@ -52,11 +53,11 @@ class KaggleDialog(datasets: List<Dataset>, private val project: Project) : Dial
     descriptionArea.isEditable = false
     descriptionArea.background = UIUtil.getPanelBackground()
     descriptionArea.contentType = HTMLEditorKit().contentType
-    descriptionArea.editorKit = UIUtil.JBWordWrapHtmlEditorKit()
+    descriptionArea.editorKit = HTMLEditorKitBuilder().withWordWrapViewFactory().build()
     descriptionArea.addHyperlinkListener(BrowserHyperlinkListener.INSTANCE)
     splitPane.firstComponent =
       ToolbarDecorator.createDecorator(jbList).disableAddAction().disableRemoveAction().disableUpDownActions()
-        .addExtraAction(object : AnActionButton("Refresh datasets list", AllIcons.Actions.Refresh) {
+        .addExtraAction(object : AnActionButton("Refresh Datasets List", AllIcons.Actions.Refresh) {
           override fun actionPerformed(e: AnActionEvent) {
             KaggleDatasetsCache.INSTANCE.updateKaggleCache()
           }
@@ -82,7 +83,7 @@ class KaggleDialog(datasets: List<Dataset>, private val project: Project) : Dial
       })
   }
 
-  override fun getPreferredFocusedComponent(): JComponent? {
+  override fun getPreferredFocusedComponent(): JComponent {
     return jbList
   }
 
@@ -101,7 +102,7 @@ class KaggleDialog(datasets: List<Dataset>, private val project: Project) : Dial
     ) ?: return
 
     ProgressManager.getInstance().run(object : Task.Backgroundable(
-      project, "Loading Selected Dataset",
+      project, "Loading selected dataset",
       false, PerformInBackgroundOption.DEAF
     ) {
       override fun run(indicator: ProgressIndicator) {

@@ -11,6 +11,8 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.util.io.FileUtil
+import com.intellij.openapi.vfs.VfsUtil
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.messages.Topic
 import com.jetbrains.kaggle.KaggleDatasetsCache
 import okhttp3.*
@@ -31,7 +33,7 @@ const val CREDENTIALS_MESSAGE = "Failed to find credentials. Please, follow the 
 
 object KaggleConnector {
   private val LOG = Logger.getInstance(KaggleConnector::class.java.name)
-  val datasetsTopic = Topic.create<DatasetTopic>("Kaggle.datasets", DatasetTopic::class.java)
+  val datasetsTopic = Topic.create("Kaggle.datasets", DatasetTopic::class.java)
   private const val PAGES_TO_LOAD = 300
   val configDir =
     System.getenv("KAGGLE_CONFIG_DIR") ?: "${System.getProperty("user.home")}${File.separator}.kaggle"
@@ -63,7 +65,7 @@ object KaggleConnector {
     }
 
   fun fillDatasets() {
-    val kaggleService = KaggleConnector.service ?: return
+    val kaggleService = service ?: return
     var pagesLoaded = 0
     val progressIndicator = ProgressManager.getInstance().progressIndicator
     for (currentPage in 1..PAGES_TO_LOAD) {
@@ -87,7 +89,7 @@ object KaggleConnector {
           }
 
           if (pagesLoaded == PAGES_TO_LOAD - 1) {
-            ApplicationManager.getApplication().messageBus.syncPublisher<DatasetTopic>(datasetsTopic).cacheUpdated()
+            ApplicationManager.getApplication().messageBus.syncPublisher(datasetsTopic).cacheUpdated()
           }
         }
       })
@@ -95,17 +97,28 @@ object KaggleConnector {
   }
 
   fun downloadDataset(filePath: String, dataset: Dataset) {
-    val kaggleService = KaggleConnector.service ?: return // TODO: Failure notifications
+    val kaggleService = service ?: return // TODO: Failure notifications
 
     val responseBody = kaggleService.downloadDataset(
       dataset.ref.substringBefore("/"),
       dataset.ref.substringAfter("/")
-    ).execute().body() ?: return
+    ).execute().body()
+    if (responseBody == null) {
+      Notifications.Bus.notify(
+        KaggleNotification(
+          "Failed to download dataset",
+          NotificationType.WARNING,
+          false
+        )
+      )
+      return
+    }
 
     val datasetFile = File(filePath)
     FileUtil.createIfDoesntExist(datasetFile)
     val output = FileOutputStream(datasetFile)
     IOUtil.copyCompletely(responseBody.byteStream(), output)
+    VfsUtil.findFileByIoFile(datasetFile, true)
     Notifications.Bus.notify(
       KaggleNotification(
         "Dataset \"${dataset.title}\" saved to the ${datasetFile.path}",
@@ -116,9 +129,9 @@ object KaggleConnector {
   }
 }
 
-class KaggleNotification(content: String, type: NotificationType, hyperlink: Boolean) :
-  Notification("kaggle.downloader",
-    "", content, type,
+class KaggleNotification(content: String, type: NotificationType, private val hyperlink: Boolean) :
+  Notification("kaggle.downloader", "", content, type), NotificationFullContent {
+  override fun getListener(): NotificationListener =
     object : NotificationListener.Adapter() {
       override fun hyperlinkActivated(notification: Notification, e: HyperlinkEvent) {
         if (hyperlink) {
@@ -126,7 +139,8 @@ class KaggleNotification(content: String, type: NotificationType, hyperlink: Boo
         }
         notification.expire()
       }
-    }), NotificationFullContent
+    }
+}
 
 class BasicAuthInterceptor(user: String, token: String) : Interceptor {
 

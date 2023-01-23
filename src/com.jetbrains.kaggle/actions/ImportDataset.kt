@@ -17,38 +17,41 @@ import com.jetbrains.kaggle.interaction.KaggleNotification
 import com.jetbrains.kaggle.ui.KaggleDialog
 import java.io.File
 
-class ImportDataset : DumbAwareAction("&Import Kaggle Dataset", "&Import Kaggle Dataset", KaggleIcons.KaggleLogo) {
+class ImportDataset : DumbAwareAction("&Import Kaggle Dataset", "Import kaggle dataset", KaggleIcons.KaggleLogo) {
 
   override fun actionPerformed(e: AnActionEvent) {
     val project = e.getData(CommonDataKeys.PROJECT) ?: return
 
     val credentialsFile = File("${KaggleConnector.configDir}${File.separator}kaggle.json")
     if (!credentialsFile.exists()) {
-      KaggleNotification(CREDENTIALS_MESSAGE, NotificationType.WARNING, true
+      KaggleNotification(
+        CREDENTIALS_MESSAGE, NotificationType.WARNING, true
       ).notify(null)
       return
     }
 
-      ProgressManager.getInstance().run(object : Task.Backgroundable(null, "Import Dataset",
-        true, PerformInBackgroundOption.DEAF) {
-        override fun run(indicator: ProgressIndicator) {
-          val datasets = KaggleDatasetsCache.INSTANCE.datasetsCache
-          indicator.isIndeterminate = false
-          indicator.text = "Loading datasets"
-          indicator.text2 = "It may take some time to load datasets for the first time"
-          while (true) {
-            indicator.checkCanceled()
-            Thread.sleep(500)
-            if (!KaggleDatasetsCache.INSTANCE.updateInProgress) {
-              break
-            }
-          }
-          runInEdt {
-            val kaggleDialog = KaggleDialog(datasets, project)
-            kaggleDialog.show()
+    ProgressManager.getInstance().run(object : Task.Backgroundable(
+      null, "Import dataset",
+      true, PerformInBackgroundOption.DEAF
+    ) {
+      override fun run(indicator: ProgressIndicator) {
+        val datasets = KaggleDatasetsCache.INSTANCE.datasetsCache
+        indicator.isIndeterminate = false
+        indicator.text = "Loading datasets"
+        indicator.text2 = "It may take some time to load datasets for the first time"
+        while (true) {
+          indicator.checkCanceled()
+          Thread.sleep(500)
+          if (!KaggleDatasetsCache.INSTANCE.updateInProgress) {
+            break
           }
         }
-      })
+        runInEdt {
+          val kaggleDialog = KaggleDialog(datasets, project)
+          kaggleDialog.show()
+        }
+      }
+    })
   }
 
   override fun update(e: AnActionEvent) {

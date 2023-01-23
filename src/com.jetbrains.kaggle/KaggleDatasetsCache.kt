@@ -26,7 +26,7 @@ class KaggleDatasetsCache : PersistentStateComponent<KaggleDatasetsCache> {
     }
 
   init {
-    ApplicationManager.getApplication().messageBus.connect().subscribe<DatasetTopic>(KaggleConnector.datasetsTopic,
+    ApplicationManager.getApplication().messageBus.connect().subscribe(KaggleConnector.datasetsTopic,
       object : DatasetTopic {
         override fun cacheUpdateStarted() {
           updateInProgress = true
@@ -40,12 +40,12 @@ class KaggleDatasetsCache : PersistentStateComponent<KaggleDatasetsCache> {
 
   fun updateKaggleCache() {
     if (updateInProgress) return
-    ApplicationManager.getApplication().messageBus.syncPublisher<DatasetTopic>(KaggleConnector.datasetsTopic)
+    ApplicationManager.getApplication().messageBus.syncPublisher(KaggleConnector.datasetsTopic)
       .cacheUpdateStarted()
     KaggleConnector.fillDatasets()
   }
 
-  override fun getState(): KaggleDatasetsCache? {
+  override fun getState(): KaggleDatasetsCache {
     return this
   }
 
@@ -55,6 +55,6 @@ class KaggleDatasetsCache : PersistentStateComponent<KaggleDatasetsCache> {
 
   companion object {
     val INSTANCE: KaggleDatasetsCache
-      get() = ServiceManager.getService(KaggleDatasetsCache::class.java)
+      get() = service()
   }
 }

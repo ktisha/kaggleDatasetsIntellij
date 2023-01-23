@@ -4,6 +4,7 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.StartupActivity
 import com.intellij.util.text.DateFormatUtil
+import kotlin.math.abs
 
 class KaggleUpdater : StartupActivity {
   override fun runActivity(project: Project) {
@@ -22,7 +23,7 @@ class KaggleUpdater : StartupActivity {
   private fun checkNeeded(): Boolean {
     val datasetsCache = KaggleDatasetsCache.INSTANCE
     val timeDelta = System.currentTimeMillis() - datasetsCache.lastTimeChecked
-    return Math.abs(timeDelta) >= EXPIRATION_TIMEOUT
+    return abs(timeDelta) >= EXPIRATION_TIMEOUT
   }
 
   companion object {
